@@ -1,52 +1,58 @@
-# SedimentTransport
-# Basic sediment transport python code
-import numpy as np
-import matplotlib.pyplot as plt
+# Sediment Transport Model
 
-# Given parameters (typical values)
+## Overview
+This Python script calculates sediment transport rates based on flow velocity, bed slope, sediment grain size, and water depth. The model estimates shear stress and determines whether sediment transport occurs, visualizing the relationship between shear stress and transport rates.
 
-U = 1.5         # Flow velocity (m/s)
-S = 0.01        # Bed slope (dimensionless)
-D50 = 0.02      # Median grain size (m)
-h = 0.5         # Water depth (m)
-rho_w = 1000    # Water density (kg/m**3)
-rho_s = 2650    # Sediment density (kg/m**3)
-g = 9.8         # Gravity (m/s**2)
+## Features
+- Computes shear stress using given hydraulic parameters
+- Determines sediment transport rates based on a critical threshold
+- Plots the sediment transport rate as a function of shear stress
 
-# Compute shear stress
+## Dependencies
+The script requires the following Python libraries:
+- `numpy` for numerical operations
+- `matplotlib` for visualization
 
-tau = rho_w * g * h * S
+To install these dependencies, run:
+```bash
+pip install numpy matplotlib (pip3, if you have Python3 and have not reassigned pip3 to pip)
+```
 
-print (f"Shear Stress (T) = {tau:.2f} Pa")
+## Usage
+1. Clone the repository or download the script.
+2. Run the script using:
+   ```bash
+   python sediment_transport.py
+   ```
+3. The program outputs:
+   - Shear stress value
+   - Sediment transport rate (if transport occurs)
+   - A plot visualizing sediment transport as a function of shear stress
 
-#---------------------------------------------------------------------------------
+## Methodology
+The model follows these steps:
+1. Compute shear stress (τ) using:
+   ```
+   τ = ρ_w * g * h * S
+   ```
+2. Compare τ with the critical shear stress (τ_c).
+   - If τ > τ_c, sediment transport occurs.
+   - If τ ≤ τ_c, no transport happens.
+3. Compute sediment transport rate:
+   ```
+   q_s = 8 * (τ - τ_c) ^ 1.5 (if τ > τ_c)
+   ```
+4. Generate a plot showing the sediment transport rate variation with shear stress.
 
-# Critical shear stress for sediment motion
-tau_c = 0.3  # Adjust based on grain size and river conditions
+## Output
+- **Numerical values**: Displays calculated shear stress and sediment transport rate.
+- **Graph**: A plot of shear stress vs. sediment transport rate.
 
-# Compute sediment transport only if τ > τ_c
-if tau > tau_c:
-    q_s = 8 * (tau - tau_c) ** 1.5
-else:
-    q_s = 0 # No movement if below threshold
+## Future Enhancements
+- Incorporate real-world river data.
+- Adapt for varying sediment sizes and bed conditions.
+- Integrate with GIS tools for spatial analysis.
 
-print (f"Sediment transport rate (q_s) = {q_s:.2f} m**2/s")
+## Author
+Developed by Minal Londhe
 
-#----------------------------------------------------------------------------------
-
-# Define range of shear stresses
-tau_values = np.linspace(0, 2, 100)  # Vary τ from 0 to 2 Pa
-
-# Compute q_s for each τ
-qs_values = np.where(tau_values > tau_c, 8 * np.power(np.maximum(tau_values - tau_c, 0), 1.5) , 0)
-
-# Plot results
-plt.figure(figsize=(8, 5))
-plt.plot(tau_values, qs_values, label="Sediment Transport Rate", color="b")
-plt.axvline(tau_c, linestyle="--", color="r", label="Critical Shear Stress")
-plt.xlabel("Shear Stress (τ)")
-plt.ylabel("Sediment Transport Rate (q_s)")
-plt.title("Sediment Transport Model")
-plt.legend()
-plt.grid()
-plt.show()
